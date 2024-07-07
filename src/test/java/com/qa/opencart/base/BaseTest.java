@@ -35,7 +35,7 @@ public class BaseTest {
 	@BeforeTest
 	public void setUp(String browser) {
 	df = new DriverFactory();
-	prop= df. initProp();
+	prop= df.initProp();
 	
 	if(browser!= null){
 		prop.setProperty("browserName", browser);

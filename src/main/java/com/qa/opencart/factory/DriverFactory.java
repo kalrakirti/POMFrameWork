@@ -20,16 +20,17 @@ public class DriverFactory {
 
 	WebDriver driver;
 	Properties prop;
-	
-	
-/**
- * This method is used ti initialize browser on basis of browser passed.
- * @param browserName
- */
+
+	/**
+	 * This method is used ti initialize browser on basis of browser passed.
+	 * 
+	 * @param browserName
+	 */
 	public WebDriver initDriver(Properties prop) {
-		String browser=prop.getProperty("browserName");
-		String ur =prop.getProperty("url");
+		String browser = prop.getProperty("browserName");
+		String ur = prop.getProperty("url");
 		System.out.println("your browser is " + browser);
+		System.out.println("your browser is " + ur);
 		switch (browser.toLowerCase().trim()) {
 		case "chrome":
 			driver = new ChromeDriver();
@@ -46,71 +47,71 @@ public class DriverFactory {
 		default:
 			System.out.println();
 			throw new BrowserException(AppError.BROWSER_NOT_FOUND);
-						}
+		}
 		driver.manage().deleteAllCookies();
 		driver.manage().window().maximize();
 		driver.get(ur);
 		return driver;
 	}
 
-	
 	/**
-	 * This methosd is used to intialize properties from .properties file.
-	 * and return properties refrence prop.
+	 * This methosd is used to intialize properties from .properties file. and
+	 * return properties refrence prop.
+	 * 
 	 * @return
 	 */
-	public Properties initProp()  {
+	public Properties initProp() {
 		prop = new Properties();
-		FileInputStream ip =null;
-		
-		//mvn clean install -Denv ="qa"
+		FileInputStream ip = null;
+
+		// mvn clean install -Denv ="qa"
 		String envName = System.getProperty("env");
-		System.out.println("running the suite in env---- "+envName);
-		if(envName == null) {
+		System.out.println("running the suite in env---- " + envName);
+		if (envName == null) {
 			System.out.println("env name is null , hence running in QA env ");
 			try {
-				ip = new FileInputStream(AppConstants.CONFIG_QA_FILE_PATH);
+				ip = new FileInputStream(AppConstants.CONFIG_FILE_PATH);
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}else {
+		} else {
+
+			try {
+				switch (envName.trim().toLowerCase()) {
+				case "qa":
+					ip = new FileInputStream(AppConstants.CONFIG_QA_FILE_PATH);
+					break;
+				case "dev":
+					ip = new FileInputStream(AppConstants.CONFIG_DEV_FILE_PATH);
+					break;
+				case "uat":
+					ip = new FileInputStream(AppConstants.CONFIG_UAT_FILE_PATH);
+					break;
+				case "stage":
+					ip = new FileInputStream(AppConstants.CONFIG_STAGE_FILE_PATH);
+					break;
+				case "prod":
+					ip = new FileInputStream(AppConstants.CONFIG_FILE_PATH);
+					break;
+				default:
+					System.out.println("Please pass the correct env name");
+					throw new FrameWorkException("wrong env name ");
+				}
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+			try {
+				prop.load(ip);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		
-		try {
-		switch (envName.trim().toLowerCase()) {
-		case "qa":
-			ip = new FileInputStream(AppConstants.CONFIG_QA_FILE_PATH);
-			break;
-		case "dev":
-			ip = new FileInputStream(AppConstants.CONFIG_DEV_FILE_PATH);
-			break;
-		case "uat":
-			ip = new FileInputStream(AppConstants.CONFIG_UAT_FILE_PATH);
-			break;
-		case "stage":
-			ip = new FileInputStream(AppConstants.CONFIG_STAGE_FILE_PATH);
-			break;
-		case "prod":
-			ip = new FileInputStream(AppConstants.CONFIG_FILE_PATH);
-			break;
-		default:
-			System.out.println("Please pass the correct env name");
-			throw new FrameWorkException("wrong env name ");
-					}
-		}
-		catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		try {
-			prop.load(ip);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		}	
-			return prop;
-		
+		return prop;
+
 	}
 }
