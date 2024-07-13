@@ -6,7 +6,7 @@ public class DemoPage {
 	
 	public void demoMEthod() {
 		System.out.println(demoPage);
-		System.out.println("test webhook");
+		System.out.println("test webhook - kiting");
 		
 	}
 }
