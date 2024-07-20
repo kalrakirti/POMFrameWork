@@ -7,7 +7,8 @@
 
 	<test name="register user test">
 		<parameter name="browser" value="chrome" />
-		
+		<parameter name="browserversion" value="124.0" />
+		<parameter name="testname" value="unittest" />
 		<classes>
 			<class name="com.qa.opencart.mytest.RegisterationPageTest" />
 		</classes>

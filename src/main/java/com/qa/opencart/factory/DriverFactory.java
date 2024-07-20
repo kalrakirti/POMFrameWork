@@ -5,10 +5,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
 
 import com.qa.opencart.constants.AppConstants;
@@ -16,10 +18,16 @@ import com.qa.opencart.error.AppError;
 import com.qa.opencart.exceptions.BrowserException;
 import com.qa.opencart.exceptions.FrameWorkException;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 public class DriverFactory {
 
 	WebDriver driver;
 	Properties prop;
+	OptionsManager optionsManager;
+
+	public static ThreadLocal<WebDriver> tlDriver = new ThreadLocal<WebDriver>();
 
 	/**
 	 * This method is used ti initialize browser on basis of browser passed.
@@ -28,30 +36,92 @@ public class DriverFactory {
 	 */
 	public WebDriver initDriver(Properties prop) {
 		String browser = prop.getProperty("browserName");
+
 		String ur = prop.getProperty("url");
+		optionsManager = new OptionsManager(prop);
+
 		System.out.println("your browser is " + browser);
 		System.out.println("your browser is " + ur);
 		switch (browser.toLowerCase().trim()) {
 		case "chrome":
-			driver = new ChromeDriver();
+
+			if (Boolean.parseBoolean(prop.getProperty("remote"))) {
+				// run on Remote web driver
+				initRemoteDriver("chrome");
+			} else {
+//				driver = new ChromeDriver();
+				tlDriver.set(new ChromeDriver());
+			}
 			break;
 		case "edge":
-			driver = new EdgeDriver();
+			if (Boolean.parseBoolean(prop.getProperty("remote"))) {
+				// run on Remote web driver
+				initRemoteDriver("edge");
+			} else {
+//				driver = new EdgeDriver();
+				tlDriver.set( new EdgeDriver());
+			}
 			break;
 		case "firefox":
-			driver = new FirefoxDriver();
+			if (Boolean.parseBoolean(prop.getProperty("remote"))) {
+				// run on Remote web driver
+				initRemoteDriver("firefox");
+			} else {
+//				driver = new FirefoxDriver();
+				tlDriver.set(new ChromeDriver());
+			}
 			break;
 		case "safari":
 			driver = new SafariDriver();
 			break;
 		default:
-			System.out.println();
+			System.out.println("plz pass right browser");
 			throw new BrowserException(AppError.BROWSER_NOT_FOUND);
 		}
-		driver.manage().deleteAllCookies();
-		driver.manage().window().maximize();
-		driver.get(ur);
-		return driver;
+		getDriver().manage().deleteAllCookies();
+		getDriver().manage().window().maximize();
+		getDriver().get(ur);
+		return getDriver();
+	}
+
+	/**
+	 * init remote webdriver to run test cases on remote machine.
+	 * 
+	 * @param browsername
+	 */
+	private void initRemoteDriver(String browsername) {
+
+		System.out.println("Running it on Selenium grid .." + browsername);
+		try {
+			switch (browsername) {
+			case "chrome":
+				System.out.println("inside chrome");
+				System.out.println(prop.getProperty("huburl"));
+				tlDriver.set(
+						new RemoteWebDriver(new URL(prop.getProperty("huburl")), optionsManager.getChromeOptions()));
+
+				break;
+
+			case "firefox":
+
+				tlDriver.set(
+						new RemoteWebDriver(new URL(prop.getProperty("huburl")), optionsManager.getFirefoxOptions()));
+				break;
+
+			case "edge":
+
+				tlDriver.set(new RemoteWebDriver(new URL(prop.getProperty("huburl")), optionsManager.getEdgeOptions()));
+				break;
+
+			default:
+				System.out.println("plz pass right browser");
+				throw new BrowserException(AppError.BROWSER_NOT_FOUND);
+			}
+		} catch (MalformedURLException e) {
+
+			e.printStackTrace();
+		}
+
 	}
 
 	/**
@@ -70,7 +140,7 @@ public class DriverFactory {
 		if (envName == null) {
 			System.out.println("env name is null , hence running in QA env ");
 			try {
-				ip = new FileInputStream(AppConstants.CONFIG_FILE_PATH);
+				ip = new FileInputStream(AppConstants.CONFIG_QA_FILE_PATH);
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -104,14 +174,24 @@ public class DriverFactory {
 				e.printStackTrace();
 			}
 		}
-			try {
-				prop.load(ip);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		
+		try {
+			prop.load(ip);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 		return prop;
 
 	}
+	/**
+	 * get the local copy of driver
+	 * @return
+	 */
+	
+	public static WebDriver getDriver() {
+		return tlDriver.get();
+	}
+	
+	
 }
