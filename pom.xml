@@ -74,6 +74,14 @@
 			<artifactId>opencsv</artifactId>
 			<version>5.9</version>
 		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/com.mysql/mysql-connector-j -->
+<dependency>
+    <groupId>com.mysql</groupId>
+    <artifactId>mysql-connector-j</artifactId>
+    <version>9.1.0</version>
+</dependency>
+
 	</dependencies>
 <build>
 
@@ -99,8 +107,8 @@
 					<forkCount>3</forkCount>
 					<reuseForks>true</reuseForks>
 					<suiteXmlFiles>
-<!-- 						<suiteXmlFile>src/test/resources/testrunners/unitTest.xml</suiteXmlFile> -->
-				 <suiteXmlFile>${suiteXmlFile}</suiteXmlFile> 
+ 						<suiteXmlFile>src/test/resources/testrunners/unitTest.xml</suiteXmlFile> 
+<!--				 <suiteXmlFile>${suiteXmlFile}</suiteXmlFile> -->
 					</suiteXmlFiles>
 					
 									

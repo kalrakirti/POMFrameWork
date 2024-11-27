@@ -1,32 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
 
-<suite name="OpenCart App Regression Suite" verbose="4" parallel="tests"
-	thread-count="3">
-
+<suite name="OpenCart App Regression Suite" verbose="4"
+	parallel="tests" thread-count="3">
 
 	<test name="Open cart test">
-		<parameter name="browser" value="chrome"/>
+		<parameter name="browser" value="chrome" />
+		<parameter name="browserversion" value="123.0" />
+		<parameter name="testname" value="Login Page Test" />
 		<classes>
 			<class name="com.qa.opencart.mytest.LoginPageTest" />
 		</classes>
-		
-		
+
+
 	</test>
-	
+
 	<test name="AccountsPage test">
-		<parameter name="browser" value="edge" />
+
+		<parameter name="browser" value="chrome" />
+		<parameter name="browserversion" value="123.0" />
+		<parameter name="testname" value="Login Page Test" />
 		<classes>
 			<class name="com.qa.opencart.mytest.AccountsPageTest" />
 		</classes>
 	</test>
-	
+
 	<test name="Product Info  test">
-		<parameter name="browser" value="chrome"/>
+		<parameter name="browser" value="chrome" />
+		<parameter name="browserversion" value="123.0" />
+		<parameter name="testname" value="Login Page Test" />
 		<classes>
 			<class name="com.qa.opencart.mytest.ProductsInfoPageTest" />
 		</classes>
 	</test>
-	
-	
+
+
 </suite>
